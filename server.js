@@ -1,15 +1,19 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
-const app = express();
 
+const app = express();
 app.use(express.json());
+
 
 app.get("/", (req, res) => {
     res.send("Welcome to Bookstore API");
 });
+
+app.use("/api/auth", authRoutes);
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true})
 .then(() => {
