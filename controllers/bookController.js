@@ -13,17 +13,36 @@ export const createBook = async (req, res) => {
 
 export const getAllBooks = async (req, res) => {
     try {
-        const Books = await Book.find();
+        const {author, category, minRating, title} = req.query;
+
+        const query = {};
+
+        if(author)
+            query.author = new RegExp(author, "i");
+
+        if(category)
+            query.category = category;
+
+        if(minRating)
+            query.rating = { $gte: Number(minRating)};
+
+        if(title)
+            query.title = new RegExp(title, "i");
+
+        console.log("Query object:", query);
+        const books = await Book.find();
         res.json(books);
     }
     catch(err) {
-        res.status(400).json({message: err.message});
+        console.error("Error in getAllBooks:", err);
+        res.status(400).json({message: "Something went wrong"});
     }
 };
 
 export const getBookById = async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
+        console.log("BI executed.")
         if(!book)
             return res.status(404).json({message: "Book not found"});
         res.json(book);
