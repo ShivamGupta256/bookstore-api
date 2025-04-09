@@ -13,7 +13,7 @@ export const createBook = async (req, res) => {
 
 export const getAllBooks = async (req, res) => {
     try {
-        const {author, category, minRating, title} = req.query;
+        const {author, category, minRating, title, page = 1, limit = 10, sortBy = "createdAt", order = "desc"} = req.query;
 
         const query = {};
 
@@ -29,8 +29,10 @@ export const getAllBooks = async (req, res) => {
         if(title)
             query.title = new RegExp(title, "i");
 
-        console.log("Query object:", query);
-        const books = await Book.find();
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const sortOrder = order === "asc" ? 1:-1;
+
+        const books = await Book.find().sort({[sortBy]: sortOrder}).skip(skip).limit(parseInt(limit));
         res.json(books);
     }
     catch(err) {
